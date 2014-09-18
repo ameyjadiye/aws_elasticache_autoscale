@@ -41,14 +41,13 @@ def number_of_nodes(desc):
 
 
 def find_node_freespace(desc,elasticache_numnodes):
-
 	end_time = datetime.datetime.utcnow()
 	start_time = end_time - datetime.timedelta(minutes=1)
 
 	# This sets up the connection information to CloudWatch.  
 	cloudwatch_connection = boto.connect_cloudwatch(autoscale_config.AWS_ACCESS_KEY,autoscale_config.AWS_SECRET_KEY)
 	#metrics = cloudwatch_connection.list_metrics(metric_name='FreeableMemory')
-	metrics = cloudwatch_connection.list_metrics(namespace="AWS/ElastiCache", dimensions={'CacheClusterId':'test','CacheNodeId':'0001'})
+	metrics = cloudwatch_connection.list_metrics(namespace="AWS/ElastiCache", dimensions={'CacheClusterId':autoscale_config.CACHE_CLUSTER_NAME,'CacheNodeId':'0001'})
 	statistics = ['Average', 'Minimum']
 	unit='Bytes'
 	metric_name='UnusedMemory'
@@ -58,7 +57,7 @@ def find_node_freespace(desc,elasticache_numnodes):
 	for i in range(0, elasticache_numnodes):
 	    	Nodeid = desc['DescribeCacheClustersResponse']['DescribeCacheClustersResult']['CacheClusters'][0]['CacheNodes'][i]['CacheNodeId']
 #		print Nodeid
-		dimensions={'CacheClusterId':'test','CacheNodeId':Nodeid}
+		dimensions={'CacheClusterId':autoscale_config.CACHE_CLUSTER_NAME,'CacheNodeId':Nodeid}
 #		print dimensions
 		freespace = cloudwatch_connection.get_metric_statistics(60, start_time, end_time, metric_name, namespace, statistics, dimensions, unit)
 #		print freespace
@@ -77,7 +76,7 @@ def scale_up_check(free_space_list,maxsize):
 	scale_down_required=0
 	for freespace in free_space_list:
 	  	pc=(float(freespace)/float(maxsize))*100
-		print pc
+#		print pc
 		if pc < 20.0:
 			scale_up_required=scale_up_required+1
 	return scale_up_required
@@ -87,7 +86,7 @@ def scale_down_check(free_space_list,maxsize):
 	scale_down_required=0
 	for freespace in free_space_list:
 	  	pc=(float(freespace)/float(maxsize))*100
-		print pc
+#		print pc
 		if pc > 90:
 			scale_down_required=scale_down_required+1
 	return scale_down_required
