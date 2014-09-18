@@ -5,17 +5,17 @@ import autoscale_modules
 def main():
         try:
                 desc=autoscale_modules.connection_create()
-		status = autoscale_modules.status_cluster(desc) 
+		status = autoscale_modules.status_cluster(desc)
 		if status != 'available':
 			raise Exception("Cluster is not available. Current status : " + status )
 		maxsize=autoscale_modules.find_maxsize(desc)
 		elasticache_numnodes=autoscale_modules.number_of_nodes(desc)
 		free_space_list=autoscale_modules.find_node_freespace(desc,elasticache_numnodes)
 		scale_up_required=autoscale_modules.scale_up_check(free_space_list,maxsize)
-		print 	scale_up_required	
 		if scale_up_required == elasticache_numnodes:
 			if autoscale_config.MAX_NODE > elasticache_numnodes:
 				msg=autoscale_modules.scale_up_cluster(elasticache_numnodes)
+				print msg
 			else:
 				raise Exception("Cluster reached Max nodes, no further scale up possible..")
 
