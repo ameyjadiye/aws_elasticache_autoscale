@@ -77,7 +77,7 @@ def scale_up_check(free_space_list,maxsize):
 	for freespace in free_space_list:
 	  	pc=(float(freespace)/float(maxsize))*100
 #		print pc
-		if pc < 20.0:
+		if pc < float(autoscale_config.SCALEDOWN_THRESHOLD):
 			scale_up_required=scale_up_required+1
 	return scale_up_required
 
@@ -87,7 +87,7 @@ def scale_down_check(free_space_list,maxsize):
 	for freespace in free_space_list:
 	  	pc=(float(freespace)/float(maxsize))*100
 #		print pc
-		if pc > 90:
+		if pc > float(autoscale_config.SCALEUP_THRESHOLD):
 			scale_down_required=scale_down_required+1
 	return scale_down_required
 
